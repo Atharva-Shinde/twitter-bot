@@ -3,9 +3,9 @@ console.log("Shree Ganeshaya Namaha");
 const twtusername = '@atharvashinde_';
 
 //making sure npm run develop works
-// if (process.env.NODE_ENV === "develop") {
-//     require("dotenv").config();
-//   };
+if (process.env.NODE_ENV === "develop") {
+    require("dotenv").config();
+  };
 
 // these are rules for node-schedule
 //this checks node-schedule in node modules 
@@ -17,14 +17,15 @@ rule.dayOfWeek = 1;
 rule.hour = 10;
 rule.tz = "Etc/GMT+5:30";
 
+const repliesArray = ['thanks', 'thank you', 'ty', ':) thanks'];
+
 // this is to creat a client i.e twit to connect to twitter Api 
 const twitter_client = require('twit');
 
 // Pulling keys from another file
 var config = require('./config.js');
 
-// this is created so that we can make requests to twitter api 
-// from now on when we want to use twit modules we'll simply reference the T.propertyName suntax
+// as mentioned in twit api readme it needs configuration object with the form that is present in .config.js, so this lines connect twit to config 
 var T = new twitter_client(config);
 
 // this stream variable filters the twitter public stream that mentions your username from other twitter accounts
@@ -33,3 +34,26 @@ var stream = T.stream('statuses/filter', {track: twtusername});
 // 'tweet' is a parameter that should be listened
 // pressStartis a function that handles the events 
 stream.on('tweet', pressStart);
+
+// tweet paramter is the tweet that another twitter user has twitted
+function pressStart(tweet) {
+    const id = tweet.id_str;
+    const text = tweet.text;
+    // this gives username of person who twitted and mentioned you
+    const name = tweet.user.screen_name;
+
+    // this regex search for word 'please' to activate the bot 
+    let regex1 = /(congrats)/gi;
+    const check1 = text.match(regex1) || [];
+    const check2 = check1.length > 0;
+    
+    if(check2==true && text.includes(twtusername)){
+        const reply = ('@'+ name + repliesArray[Math.floor(Math.random() * repliesArray.length)]);
+        // this👇 is used to post the tweet 
+        T.post('statuses/update', { status:reply, in_reply_to_status_id: id});
+
+    } else {
+        config.log(':|');
+    };
+}
+

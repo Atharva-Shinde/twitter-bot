@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "app.js",
-    "start": "npm run app.js"
-    // "develop": "NODE_ENV=develop node app.js"
+    "start": "npm run app.js",
+    "develop": "NODE_ENV=develop node app.js"
  },
   "repository": {
     "type": "git",
